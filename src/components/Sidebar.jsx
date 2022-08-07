@@ -20,10 +20,13 @@ import ModeNightIcon from "@mui/icons-material/ModeNight";
 const Sidebar = () => {
     return (
         <Box
+            color="white"
             flex={1}
             p={2}
             sx={{
+                background: "linear-gradient(180deg, rgba(24,109,233,1) 0%, rgba(166,128,255,1) 100%, rgba(0,212,255,1) 100%)",
                 display: { xs: "none", sm: "block" },
+                height: "100vh"
             }}
         >
             <Box position="fixed">

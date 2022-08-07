@@ -4,6 +4,7 @@ import { CssVarsProvider } from "@mui/joy/styles";
 import Sheet from "@mui/joy/Sheet";
 import { TextField, Typography, Button, Link, Box } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
+axios.defaults.withCredentials = true;
 
 const Login = () => {
     let navigate = useNavigate();
