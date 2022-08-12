@@ -132,6 +132,10 @@ const List = () => {
 
     const updateStatus = async (id, status) => {
         const data = { completed: status };
+        const tasksCopy = tasks;
+        const index = tasksCopy.findIndex((task) => task.task_uid === id);
+        tasksCopy[index].completed = status;
+        setTasks(tasksCopy);
 
         await axios
             .patch(`/tasks/${id}`, data)
