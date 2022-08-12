@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 axios.defaults.withCredentials = true;
 
 const Login = () => {
-    let navigate = useNavigate();
+    const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(false);
@@ -86,6 +86,7 @@ const Login = () => {
                         helperText={errorText}
                     />
                     <Button
+                        color="primary"
                         onClick={() => checkCredentials()}
                         sx={{
                             mt: 1,

@@ -6,7 +6,7 @@ import { TextField, Typography, Button, Link, Box } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
-    let navigate = useNavigate();
+    const navigate = useNavigate();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
