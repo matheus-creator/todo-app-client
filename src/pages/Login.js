@@ -1,10 +1,36 @@
 import React, { useState } from "react";
-import axios from "../api/axios";
-import { CssVarsProvider } from "@mui/joy/styles";
-import Sheet from "@mui/joy/Sheet";
-import { TextField, Typography, Button, Link, Box } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
-axios.defaults.withCredentials = true;
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Link from "@mui/material/Link";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import axios from "../api/axios";
+
+function Copyright(props) {
+    return (
+        <Typography
+            variant="body2"
+            color="text.secondary"
+            align="center"
+            {...props}
+        >
+            {"Copyright © "}
+            <Link color="inherit" href="https://mui.com/">
+                TodoList
+            </Link>{" "}
+            {new Date().getFullYear()}
+            {"."}
+        </Typography>
+    );
+}
 
 const Login = () => {
     const navigate = useNavigate();
@@ -13,10 +39,12 @@ const Login = () => {
     const [error, setError] = useState(false);
     const [errorText, setErrorText] = useState("");
 
-    const checkCredentials = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         await axios
             .post("/users/login", { email, password })
             .then((res) => {
+                console.log(res);
                 navigate("/");
             })
             .catch((e) => {
@@ -26,38 +54,28 @@ const Login = () => {
     };
 
     return (
-        <CssVarsProvider>
+        <Container component="main" maxWidth="xs">
+            <CssBaseline />
             <Box
                 sx={{
+                    marginTop: 8,
                     display: "flex",
                     flexDirection: "column",
-                    justifyContent: "center",
-                    height: "100vh",
+                    alignItems: "center",
                 }}
             >
-                <Sheet
-                    variant="outlined"
-                    sx={{
-                        width: 400,
-                        mx: "auto",
-                        my: 4,
-                        py: 3,
-                        px: 2,
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 2,
-                        borderRadius: "sm",
-                        boxShadow: "sm",
-                    }}
+                <Avatar sx={{ m: 1, bgcolor: "alternative.main" }}>
+                    <LockOutlinedIcon />
+                </Avatar>
+                <Typography component="h1" variant="h5">
+                    Login
+                </Typography>
+                <Box
+                    component="form"
+                    onSubmit={(e) => handleSubmit(e)}
+                    noValidate
+                    sx={{ mt: 1 }}
                 >
-                    <div>
-                        <Typography level="h4" component="h1">
-                            <b>Welcome!</b>
-                        </Typography>
-                        <Typography level="body2">
-                            Sign in to continue
-                        </Typography>
-                    </div>
                     <TextField
                         onChange={(e) => {
                             setEmail(e.target.value);
@@ -65,12 +83,14 @@ const Login = () => {
                             setErrorText("");
                         }}
                         error={error}
+                        helperText={errorText}
+                        margin="normal"
+                        required
+                        fullWidth
                         name="email"
                         type="email"
-                        placeholder="Type here your email"
-                        label="Email"
-                        helperText={errorText}
-                        autoComplete="on"
+                        label="Email Address"
+                        autoFocus
                     />
                     <TextField
                         onChange={(e) => {
@@ -79,31 +99,42 @@ const Login = () => {
                             setErrorText("");
                         }}
                         error={error}
-                        name="password"
-                        type="password"
-                        placeholder="Type here your password"
-                        label="Password"
                         helperText={errorText}
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="password"
+                        label="Password"
+                        type="password"
+                    />
+                    <FormControlLabel
+                        control={<Checkbox value="remember" color="primary" />}
+                        label="Remember me"
                     />
                     <Button
-                        color="primary"
-                        onClick={() => checkCredentials()}
-                        sx={{
-                            mt: 1,
-                        }}
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
                     >
-                        Log in
+                        Login
                     </Button>
-                    <Typography
-                        endDecorator={<Link href="/signup">Sign up</Link>}
-                        fontSize="sm"
-                        sx={{ alignSelf: "center" }}
-                    >
-                        Don't have an account?
-                    </Typography>
-                </Sheet>
+                    <Grid container>
+                        <Grid item xs>
+                            <Link href="#" variant="body2">
+                                Forgot password?
+                            </Link>
+                        </Grid>
+                        <Grid item>
+                            <Link href="/signup" variant="body2">
+                                {"Don't have an account? Sign Up"}
+                            </Link>
+                        </Grid>
+                    </Grid>
+                </Box>
             </Box>
-        </CssVarsProvider>
+            <Copyright sx={{ mt: 8, mb: 4 }} />
+        </Container>
     );
 };
 

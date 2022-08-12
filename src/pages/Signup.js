@@ -1,9 +1,36 @@
 import React, { useState } from "react";
-import axios from "../api/axios";
-import { CssVarsProvider } from "@mui/joy/styles";
-import Sheet from "@mui/joy/Sheet";
-import { TextField, Typography, Button, Link, Box } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Link from "@mui/material/Link";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import axios from "../api/axios";
+
+function Copyright(props) {
+    return (
+        <Typography
+            variant="body2"
+            color="text.secondary"
+            align="center"
+            {...props}
+        >
+            {"Copyright © "}
+            <Link color="inherit" href="https://mui.com/">
+                TodoList
+            </Link>{" "}
+            {new Date().getFullYear()}
+            {"."}
+        </Typography>
+    );
+}
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -16,7 +43,8 @@ const Signup = () => {
     const [passwordError, setPasswordError] = useState(false);
     const [passwordErrorText, setPasswordErrorText] = useState("");
 
-    const registerUser = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         if (password !== confPassword) {
             setPasswordError(true);
             setPasswordErrorText("The passwords are different");
@@ -37,44 +65,37 @@ const Signup = () => {
     };
 
     return (
-        <CssVarsProvider>
+        <Container component="main" maxWidth="xs">
+            <CssBaseline />
             <Box
                 sx={{
+                    marginTop: 8,
                     display: "flex",
                     flexDirection: "column",
-                    justifyContent: "center",
-                    height: "100vh",
+                    alignItems: "center",
                 }}
             >
-                <Sheet
-                    variant="outlined"
-                    sx={{
-                        width: 400,
-                        mx: "auto",
-                        my: 4,
-                        py: 3,
-                        px: 2,
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 2,
-                        borderRadius: "sm",
-                        boxShadow: "sm",
-                    }}
+                <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+                    <LockOutlinedIcon />
+                </Avatar>
+                <Typography component="h1" variant="h5">
+                    Sign up
+                </Typography>
+                <Box
+                    component="form"
+                    onSubmit={(e) => handleSubmit(e)}
+                    noValidate
+                    sx={{ mt: 1 }}
                 >
-                    <div>
-                        <Typography level="h4" component="h1">
-                            <b>Welcome!</b>
-                        </Typography>
-                        <Typography level="body2">
-                            Sign up to continue
-                        </Typography>
-                    </div>
                     <TextField
                         onChange={(e) => setName(e.target.value)}
-                        name="name"
-                        type="name"
-                        placeholder="Type here your name"
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="name"
                         label="Name"
+                        name="name"
+                        autoFocus
                     />
                     <TextField
                         onChange={(e) => {
@@ -84,10 +105,13 @@ const Signup = () => {
                         }}
                         error={emailError}
                         helperText={emailErrorText}
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="email"
+                        label="Email Address"
                         name="email"
-                        type="email"
-                        placeholder="Type here your email"
-                        label="Email"
+                        autoComplete="email"
                     />
                     <TextField
                         onChange={(e) => {
@@ -97,10 +121,14 @@ const Signup = () => {
                         }}
                         error={passwordError}
                         helperText={passwordErrorText}
+                        margin="normal"
+                        required
+                        fullWidth
                         name="password"
-                        type="password"
-                        placeholder="Type here your password"
                         label="Password"
+                        type="password"
+                        id="password"
+                        autoComplete="current-password"
                     />
                     <TextField
                         onChange={(e) => {
@@ -110,29 +138,43 @@ const Signup = () => {
                         }}
                         error={passwordError}
                         helperText={passwordErrorText}
+                        margin="normal"
+                        required
+                        fullWidth
                         name="password"
-                        type="password"
-                        placeholder="Type your password again"
                         label="Confirm password"
+                        type="password"
+                        id="password"
+                        autoComplete="current-password"
+                    />
+                    <FormControlLabel
+                        control={<Checkbox value="remember" color="primary" />}
+                        label="Remember me"
                     />
                     <Button
-                        onClick={() => registerUser()}
-                        sx={{
-                            mt: 1,
-                        }}
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
                     >
-                        Sign up
+                        Sign In
                     </Button>
-                    <Typography
-                        endDecorator={<Link href="/login">Log in</Link>}
-                        fontSize="sm"
-                        sx={{ alignSelf: "center" }}
-                    >
-                        Already have an account?
-                    </Typography>
-                </Sheet>
+                    <Grid container>
+                        <Grid item xs>
+                            <Link href="#" variant="body2">
+                                Forgot password?
+                            </Link>
+                        </Grid>
+                        <Grid item>
+                            <Link href="/login" variant="body2">
+                                {"Already have an account? Login"}
+                            </Link>
+                        </Grid>
+                    </Grid>
+                </Box>
             </Box>
-        </CssVarsProvider>
+            <Copyright sx={{ mt: 8, mb: 4 }} />
+        </Container>
     );
 };
 
