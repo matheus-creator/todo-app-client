@@ -14,24 +14,52 @@ import {
     Typography,
 } from "@mui/material";
 
-const AddTaskModal = ({ isOpen, setOpen, updateTasks }) => {
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [status, setStatus] = useState(false);
+// TODO: fix modal problems
+
+const TaskModal = ({ data, isOpen, setOpen, tasks, setTasks, type }) => {
+    console.log(tasks)
+    const [title, setTitle] = useState(data.title);
+    const [description, setDescription] = useState(data.description);
+    const [status, setStatus] = useState(data.completed);
 
     const onFormSubmit = async (e) => {
         e.preventDefault();
-        updateTasks(true);
         setOpen(false);
+        const task = { title, description, completed: status };
 
-        await axios
-            .post("/tasks", { title, description, completed: status })
-            .then((res) => {
-                console.log("ok");
-            })
-            .catch((e) => {
-                console.log("error");
-            });
+        if (type === "create") {
+            await axios
+                .post("/tasks", task)
+                .then((res) => {
+                    setTasks([
+                        ...tasks,
+                        {
+                            task_uid: res.data.task_uid,
+                            ...task,
+                            user_uid: res.data.user_uid,
+                        },
+                    ]);
+                })
+                .catch((e) => {
+                    window.location.href = "/login";
+                });
+        } else {
+            const id = data.task_uid;
+            const tasksCopy = tasks;
+            const index = tasksCopy.findIndex(task => task.task_uid === id);
+            tasksCopy[index].title = title;
+            tasksCopy[index].description = description;
+            tasksCopy[index].completed = status;
+
+            await axios
+                .patch(`/tasks/${id}`, task)
+                .then((res) => {
+                    setTasks(tasksCopy);
+                })
+                .catch((e) => {
+                    window.location.href = "/login";
+                });
+        }
     };
 
     const style = {
@@ -42,6 +70,7 @@ const AddTaskModal = ({ isOpen, setOpen, updateTasks }) => {
         bgcolor: "background.paper",
         boxShadow: 24,
         p: 4,
+        minWidth: 300
     };
 
     return (
@@ -61,7 +90,6 @@ const AddTaskModal = ({ isOpen, setOpen, updateTasks }) => {
                     <Box
                         component="form"
                         sx={{
-                            width: 400,
                             mx: "auto",
                             py: 3,
                             px: 2,
@@ -74,7 +102,11 @@ const AddTaskModal = ({ isOpen, setOpen, updateTasks }) => {
                         onSubmit={(e) => onFormSubmit(e)}
                     >
                         <Typography variant="h4">
-                            <b>Create new task</b>
+                            <b>
+                                {type === "create"
+                                    ? "Create new task"
+                                    : "Update task"}
+                            </b>
                         </Typography>
 
                         <TextField
@@ -97,9 +129,9 @@ const AddTaskModal = ({ isOpen, setOpen, updateTasks }) => {
                             <RadioGroup
                                 row
                                 aria-labelledby="demo-radio-buttons-group-label"
-                                defaultValue="female"
                                 name="radio-buttons-group"
                                 value={status}
+                                defaultValue={data.completed}
                                 onChange={(e) => setStatus(e.target.value)}
                             >
                                 <FormControlLabel
@@ -119,7 +151,7 @@ const AddTaskModal = ({ isOpen, setOpen, updateTasks }) => {
                             variant="contained"
                             onClick={(e) => onFormSubmit(e)}
                         >
-                            Create
+                            {type}
                         </Button>
                     </Box>
                 </Box>
@@ -128,4 +160,4 @@ const AddTaskModal = ({ isOpen, setOpen, updateTasks }) => {
     );
 };
 
-export default AddTaskModal;
+export default TaskModal;

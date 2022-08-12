@@ -3,14 +3,12 @@ import {
     Avatar,
     Badge,
     Box,
-    InputBase,
     Menu,
     MenuItem,
     styled,
     Toolbar,
     Typography,
 } from "@mui/material";
-import Flame from "@mui/icons-material/LocalFireDepartment";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import React, { useState } from "react";
@@ -20,45 +18,26 @@ const StyledToolbar = styled(Toolbar)({
     justifyContent: "space-between",
 });
 
-const Search = styled("div")({
-    backgroundColor: "white",
-    padding: "0 10px",
-    borderRadius: "5px",
-    width: "40%",
-});
-
 const Icons = styled(Box)({
     gap: "20px",
     alignItems: "center",
 });
 
-const UserBox = styled(Box)({
-    gap: "10px",
-    alignItems: "center",
-});
+// TODO: use useRef to manage current user and have his name, avatar, ... available in all components
 
 const Navbar = () => {
     const [open, setOpen] = useState(false);
     return (
-        <AppBar position="sticky">
+        <AppBar
+            position="sticky"
+            bgcolor="primary"
+            sx={{
+                display: { sm: "block", md: "none" },
+            }}
+        >
             <StyledToolbar>
-                <Typography
-                    variant="h6"
-                    sx={{
-                        display: { xs: "none", sm: "block" },
-                    }}
-                >
-                    MRFLAMES
-                </Typography>
-                <Flame
-                    sx={{
-                        display: { xs: "block", sm: "none" },
-                    }}
-                />
-                <Search>
-                    <InputBase placeholder="search..." />
-                </Search>
-                <Icons sx={{ display: { xs: "none", sm: "flex" } }}>
+                <Typography variant="h6">TODO LIST</Typography>
+                <Icons sx={{ display: "flex", mx: 4 }}>
                     <Badge badgeContent={4} color="error">
                         <MailIcon />
                     </Badge>
@@ -72,17 +51,6 @@ const Navbar = () => {
                         onClick={() => setOpen(true)}
                     />
                 </Icons>
-                <UserBox
-                    sx={{ display: { xs: "flex", sm: "none" } }}
-                    onClick={() => setOpen(true)}
-                >
-                    <Avatar
-                        sx={{ width: 30, height: 30 }}
-                        alt="Travis Howard"
-                        src="https://mui.com/static/images/avatar/2.jpg"
-                    />
-                    <Typography variant="span">John</Typography>
-                </UserBox>
             </StyledToolbar>
             <Menu
                 id="demo-positioned-menu"
