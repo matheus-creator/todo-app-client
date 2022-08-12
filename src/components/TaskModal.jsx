@@ -4,6 +4,7 @@ import {
     Backdrop,
     Box,
     Button,
+    Container,
     Fade,
     FormControl,
     FormControlLabel,
@@ -13,18 +14,22 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-
-// TODO: fix modal problems
+import { useEffect } from "react";
 
 const TaskModal = ({ data, isOpen, setOpen, tasks, setTasks, type }) => {
-    console.log(tasks)
-    const [title, setTitle] = useState(data.title);
-    const [description, setDescription] = useState(data.description);
-    const [status, setStatus] = useState(data.completed);
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [status, setStatus] = useState(false);
+
+    useEffect(() => {
+        setTitle(data.title);
+        setDescription(data.description);
+        setStatus(data.completed);
+    }, [data]);
 
     const onFormSubmit = async (e) => {
         e.preventDefault();
-        setOpen(false);
+        
         const task = { title, description, completed: status };
 
         if (type === "create") {
@@ -46,7 +51,7 @@ const TaskModal = ({ data, isOpen, setOpen, tasks, setTasks, type }) => {
         } else {
             const id = data.task_uid;
             const tasksCopy = tasks;
-            const index = tasksCopy.findIndex(task => task.task_uid === id);
+            const index = tasksCopy.findIndex((task) => task.task_uid === id);
             tasksCopy[index].title = title;
             tasksCopy[index].description = description;
             tasksCopy[index].completed = status;
@@ -60,6 +65,7 @@ const TaskModal = ({ data, isOpen, setOpen, tasks, setTasks, type }) => {
                     window.location.href = "/login";
                 });
         }
+        setOpen(false);
     };
 
     const style = {
@@ -70,7 +76,6 @@ const TaskModal = ({ data, isOpen, setOpen, tasks, setTasks, type }) => {
         bgcolor: "background.paper",
         boxShadow: 24,
         p: 4,
-        minWidth: 300
     };
 
     return (
@@ -84,9 +89,10 @@ const TaskModal = ({ data, isOpen, setOpen, tasks, setTasks, type }) => {
             BackdropProps={{
                 timeout: 500,
             }}
+            sx={{ mx: 4 }}
         >
             <Fade in={isOpen}>
-                <Box sx={style}>
+                <Container maxWidth="xs" sx={style}>
                     <Box
                         component="form"
                         sx={{
@@ -131,30 +137,25 @@ const TaskModal = ({ data, isOpen, setOpen, tasks, setTasks, type }) => {
                                 aria-labelledby="demo-radio-buttons-group-label"
                                 name="radio-buttons-group"
                                 value={status}
-                                defaultValue={data.completed}
-                                onChange={(e) => setStatus(e.target.value)}
+                                onChange={(e) => setStatus(e.target.value === "true" ? true : false)}
                             >
                                 <FormControlLabel
-                                    value={true}
+                                    value="true"
                                     control={<Radio />}
                                     label="Complete"
                                 />
                                 <FormControlLabel
-                                    value={false}
+                                    value="false"
                                     control={<Radio />}
                                     label="Incomplete"
                                 />
                             </RadioGroup>
                         </FormControl>
-                        <Button
-                            size="large"
-                            variant="contained"
-                            onClick={(e) => onFormSubmit(e)}
-                        >
+                        <Button size="large" variant="contained" type="submit">
                             {type}
                         </Button>
                     </Box>
-                </Box>
+                </Container>
             </Fade>
         </Modal>
     );

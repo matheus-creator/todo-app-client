@@ -22,7 +22,12 @@ const List = () => {
     const [tasks, setTasks] = useState([]);
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [updateModalOpen, setUpdateModalOpen] = useState(false);
-    const [modalTask, setModalTask] = useState({});
+    const [modalTask, setModalTask] = useState({
+        title: "",
+        description: "",
+        completed: false,
+        task_uid: ""
+    });
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -179,18 +184,24 @@ const List = () => {
                         color="primary"
                         aria-label="add"
                         sx={{ display: { xs: "none", sm: "none", md: "flex" } }}
+                        onClick={() => setCreateModalOpen(true)}
                     >
-                        <AddBoxIcon onClick={() => setCreateModalOpen(true)} />
+                        <AddBoxIcon />
                     </Fab>
 
                     <TaskModal
-                        data={{ title: "", description: "", completed: false }}
+                        data={{
+                            title: "",
+                            description: "",
+                            completed: false,
+                        }}
                         tasks={tasks}
                         setTasks={setTasks}
                         isOpen={createModalOpen}
                         setOpen={setCreateModalOpen}
                         type={"create"}
                     />
+
                     <TaskModal
                         data={{
                             title: modalTask.title,
@@ -210,7 +221,13 @@ const List = () => {
                     <Fab
                         color="primary"
                         aria-label="add"
-                        sx={{ display: { sm: "flex", md: "none" } }}
+                        sx={{
+                            display: { sm: "flex", md: "none" },
+                            position: "absolute",
+                            top: "90%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                        }}
                     >
                         <AddBoxIcon onClick={() => setCreateModalOpen(true)} />
                     </Fab>
