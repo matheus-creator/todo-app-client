@@ -38,11 +38,14 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState(false);
     const [errorText, setErrorText] = useState("");
+    const [checked, setChecked] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const expirationTime = checked ? 'never' : '24h';
+
         await axios
-            .post("/users/login", { email, password })
+            .post("/users/login", { email, password, expirationTime })
             .then((res) => {
                 navigate("/");
             })
@@ -107,7 +110,13 @@ const Login = () => {
                         type="password"
                     />
                     <FormControlLabel
-                        control={<Checkbox value="remember" color="primary" />}
+                        control={
+                            <Checkbox
+                                checked={checked}
+                                onChange={(e) => setChecked(e.target.checked)}
+                                inputProps={{ "aria-label": "controlled" }}
+                            />
+                        }
                         label="Remember me"
                     />
                     <Button
@@ -119,11 +128,6 @@ const Login = () => {
                         Login
                     </Button>
                     <Grid container>
-                        <Grid item xs>
-                            <Link href="#" variant="body2">
-                                Forgot password?
-                            </Link>
-                        </Grid>
                         <Grid item>
                             <Link href="/signup" variant="body2">
                                 {"Don't have an account? Sign Up"}

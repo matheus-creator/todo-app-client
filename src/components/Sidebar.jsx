@@ -243,7 +243,6 @@ const Sidebar = () => {
             >
                 <Fade in={modalOpen}>
                     <Container maxWidth="xs" sx={style}>
-                        <UploadFiles />
                         <input type="file" name="avatar" onChange={uploadAvatar}/>
                     </Container>
                 </Fade>

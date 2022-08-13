@@ -42,9 +42,11 @@ const Signup = () => {
     const [emailErrorText, setEmailErrorText] = useState("");
     const [passwordError, setPasswordError] = useState(false);
     const [passwordErrorText, setPasswordErrorText] = useState("");
+    const [checked, setChecked] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
         if (password !== confPassword) {
             setPasswordError(true);
             setPasswordErrorText("The passwords are different");
@@ -52,8 +54,10 @@ const Signup = () => {
             setPasswordError(true);
             setPasswordErrorText("The password is too short");
         } else {
+            const expirationTime = checked ? 'never' : '24h';
+
             await axios
-                .post("/users", { name, email, password })
+                .post("/users", { name, email, password, expirationTime })
                 .then((res) => {
                     navigate("/");
                 })
@@ -148,7 +152,11 @@ const Signup = () => {
                         autoComplete="current-password"
                     />
                     <FormControlLabel
-                        control={<Checkbox value="remember" color="primary" />}
+                        control={<Checkbox
+                            checked={checked}
+                            onChange={(e) => setChecked(e.target.checked)}
+                            inputProps={{ "aria-label": "controlled" }}
+                        />}
                         label="Remember me"
                     />
                     <Button
@@ -160,11 +168,6 @@ const Signup = () => {
                         Sign In
                     </Button>
                     <Grid container>
-                        <Grid item xs>
-                            <Link href="#" variant="body2">
-                                Forgot password?
-                            </Link>
-                        </Grid>
                         <Grid item>
                             <Link href="/login" variant="body2">
                                 {"Already have an account? Login"}
