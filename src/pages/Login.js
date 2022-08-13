@@ -44,7 +44,6 @@ const Login = () => {
         await axios
             .post("/users/login", { email, password })
             .then((res) => {
-                console.log(res);
                 navigate("/");
             })
             .catch((e) => {

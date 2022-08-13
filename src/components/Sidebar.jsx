@@ -10,23 +10,40 @@ import {
     Menu,
     MenuItem,
     Divider,
+    Tooltip,
+    IconButton,
+    Modal,
+    Container,
+    Fade,
+    Backdrop,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import ArticleIcon from "@mui/icons-material/Article";
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
+import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import PersonAdd from "@mui/icons-material/PersonAdd";
 import Logout from "@mui/icons-material/Logout";
-import { deepOrange } from "@mui/material/colors";
 import { useState, useEffect } from "react";
 import axios from "../api/axios";
 import { Buffer } from "buffer";
+import UploadFiles from "./UploadFiles";
 
 // TODO: fix image of profile
 
+const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    bgcolor: "background.paper",
+    boxShadow: 24,
+    p: 4,
+};
+
 const Sidebar = () => {
     const [user, setUser] = useState({});
+    const [modalOpen, setModalOpen] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [base64String, setBase64String] = useState("");
     const [anchorEl, setAnchorEl] = useState(null);
@@ -38,32 +55,28 @@ const Sidebar = () => {
     };
 
     const deleteUser = async () => {
-        await axios
-            .delete("/users/me")
-            .then((res) => {
-                window.location.href = "/login";
-            });
+        await axios.delete("/users/me").then((res) => {
+            window.location.href = "/login";
+        });
     };
 
     const uploadAvatar = async (e) => {
-        console.log("hey");
-        // setSelectedFile(e.target.files[0]);
-        // let formData = new FormData();
-        // formData.append("image", selectedFile);
-        // await axios
-        //     .post("/users/me/avatar", formData, {
-        //         headers: {
-        //             "Content-Type": "image/png",
-        //         },
-        //     })
-        //     .then((res) => {
-        //         console.log(res);
-        //         // const string = Buffer.from(res.data.buffer.data).toString(
-        //         //     "base64"
-        //         // );
-        //         // setBase64String(string);
-        //     })
-        //     .catch((e) => console.log(e));
+        let formData = new FormData();
+        formData.append("avatar", e.target.files[0]);
+        await axios
+            .post("/users/me/avatar", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            })
+            .then((res) => {
+                setModalOpen(false);
+                const string = Buffer.from(res.data.rows[0].buffer.data).toString(
+                    "base64"
+                );
+                setBase64String(string);
+            })
+            .catch((e) => console.log(e.response.data.error));
     };
 
     useEffect(() => {
@@ -71,10 +84,9 @@ const Sidebar = () => {
             await axios
                 .get("/users/me")
                 .then((res) => {
-                    setUser({ name: res.data.name, id: res.data.user_uid});
+                    setUser({ name: res.data.name, id: res.data.user_uid });
                 })
-                .catch((e) => console.log(e));
-        }
+        };
 
         const getAvatar = async () => {
             await axios
@@ -85,7 +97,6 @@ const Sidebar = () => {
                     );
                     setBase64String(string);
                 })
-                .catch((e) => console.log(e));
         };
 
         getUser();
@@ -106,28 +117,34 @@ const Sidebar = () => {
                 bgcolor="#323635"
                 sx={{ width: 350, height: "100vh" }}
             >
-                <Box sx={{ display: "flex", justifyContent: "center", my: 5 }}>
-                    <Avatar
-                        onClick={(e) => setAnchorEl(e.currentTarget)}
-                        sx={{
-                            bgcolor: deepOrange[500],
-                            width: 100,
-                            height: 100,
-                        }}
-                    >
-                        { base64String === "" ? (<EmojiEmotionsIcon sx={{ width: 50, height: 50 }} />) : (<img
-                            src={`data:image/png;base64,${base64String}`}
-                            alt=""
-                        />) }
-                        <img
-                            src={`data:image/png;base64,${base64String}`}
-                            alt=""
-                        />
-                    </Avatar>
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        my: 5,
+                    }}
+                >
+                    <Tooltip title="Account settings">
+                        <IconButton
+                            onClick={(e) => setAnchorEl(e.currentTarget)}
+                        >
+                            <Avatar sx={{ width: 100, height: 100 }}>
+                                {base64String === "" ? (
+                                    <EmojiEmotionsIcon
+                                        sx={{ width: 75, height: 75 }}
+                                    />
+                                ) : (
+                                    <img
+                                        src={`data:image/png;base64,${base64String}`}
+                                        alt=""
+                                    />
+                                )}
+                            </Avatar>
+                        </IconButton>
+                    </Tooltip>
                 </Box>
                 <Menu
                     anchorEl={anchorEl}
-                    id="account-menu"
                     open={menuOpen}
                     onClose={() => setAnchorEl(null)}
                     onClick={() => setAnchorEl(null)}
@@ -144,7 +161,6 @@ const Sidebar = () => {
                                 mr: 1,
                             },
                             "&:before": {
-                                content: '""',
                                 display: "block",
                                 position: "absolute",
                                 top: 0,
@@ -166,25 +182,19 @@ const Sidebar = () => {
                         vertical: "bottom",
                     }}
                 >
-                    <MenuItem component="label">
-                        <input
-                            id="upload-picture"
-                            hidden
-                            type="file"
-                            onChange={(e) => uploadAvatar(e)}
-                        />
+                    <MenuItem onClick={() => setModalOpen(true)}>
                         <ListItemIcon>
                             <AccountCircleIcon fontSize="small" />
                         </ListItemIcon>
                         Upload profile picture
                     </MenuItem>
-                    <Divider />
                     <MenuItem>
                         <ListItemIcon>
                             <PersonAdd fontSize="small" />
                         </ListItemIcon>
                         Add contributor
                     </MenuItem>
+                    <Divider />
                     <MenuItem onClick={logoutUser}>
                         <ListItemIcon>
                             <Logout fontSize="small" />
@@ -219,6 +229,25 @@ const Sidebar = () => {
                     </List>
                 </Box>
             </Box>
+            <Modal
+                aria-labelledby="transition-modal-title"
+                aria-describedby="transition-modal-description"
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                closeAfterTransition
+                BackdropComponent={Backdrop}
+                BackdropProps={{
+                    timeout: 500,
+                }}
+                sx={{ mx: 4 }}
+            >
+                <Fade in={modalOpen}>
+                    <Container maxWidth="xs" sx={style}>
+                        <UploadFiles />
+                        <input type="file" name="avatar" onChange={uploadAvatar}/>
+                    </Container>
+                </Fade>
+            </Modal>
         </Box>
     );
 };

@@ -9,9 +9,9 @@ import {
     Tooltip,
     Typography,
 } from "@mui/material";
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import AddBoxIcon from "@mui/icons-material/AddBox";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import AddIcon from "@mui/icons-material/Add";
 import React, { useState, useEffect } from "react";
 import TaskModal from "./TaskModal";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -80,8 +80,8 @@ const List = () => {
                                     setCompleted(!completed);
                                     updateStatus(task_uid, !completed);
                                 }}
-                                icon={<CheckBoxOutlineBlankIcon />}
-                                checkedIcon={<CheckBoxIcon />}
+                                icon={<RadioButtonUncheckedIcon />}
+                                checkedIcon={<CheckCircleIcon />}
                             />
                             <Typography>{title}</Typography>
                         </Box>
@@ -139,9 +139,6 @@ const List = () => {
 
         await axios
             .patch(`/tasks/${id}`, data)
-            .then((res) => {
-                console.log(res);
-            })
             .catch((e) => {
                 window.location.href = "/login";
             });
@@ -190,7 +187,7 @@ const List = () => {
                         sx={{ display: { xs: "none", sm: "none", md: "flex" } }}
                         onClick={() => setCreateModalOpen(true)}
                     >
-                        <AddBoxIcon />
+                        <AddIcon />
                     </Fab>
 
                     <TaskModal
@@ -233,7 +230,7 @@ const List = () => {
                             transform: "translate(-50%, -50%)",
                         }}
                     >
-                        <AddBoxIcon onClick={() => setCreateModalOpen(true)} />
+                        <AddIcon onClick={() => setCreateModalOpen(true)} />
                     </Fab>
                 </Box>
             </Box>
