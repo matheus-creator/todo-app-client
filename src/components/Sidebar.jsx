@@ -16,20 +16,22 @@ import {
     Container,
     Fade,
     Backdrop,
+    Typography,
+    Button,
+    Alert,
+    Collapse,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import ArticleIcon from "@mui/icons-material/Article";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
+import CloseIcon from "@mui/icons-material/Close";
 import PersonAdd from "@mui/icons-material/PersonAdd";
 import Logout from "@mui/icons-material/Logout";
 import { useState, useEffect } from "react";
 import axios from "../api/axios";
 import { Buffer } from "buffer";
-import UploadFiles from "./UploadFiles";
-
-// TODO: fix image of profile
 
 const style = {
     position: "absolute",
@@ -43,11 +45,18 @@ const style = {
 
 const Sidebar = () => {
     const [user, setUser] = useState({});
+    const [error, setError] = useState(false);
+    const [uploadErrorMessage, setUploadErrorMessage] = useState("");
     const [modalOpen, setModalOpen] = useState(false);
-    const [selectedFile, setSelectedFile] = useState(null);
     const [base64String, setBase64String] = useState("");
     const [anchorEl, setAnchorEl] = useState(null);
     const menuOpen = Boolean(anchorEl);
+
+    const handleClose = () => {
+        setModalOpen(false);
+        setError(false);
+        setUploadErrorMessage("");
+    }
 
     const logoutUser = async () => {
         await axios.post("/users/logout");
@@ -71,32 +80,36 @@ const Sidebar = () => {
             })
             .then((res) => {
                 setModalOpen(false);
-                const string = Buffer.from(res.data.rows[0].buffer.data).toString(
-                    "base64"
-                );
+                const string = Buffer.from(
+                    res.data.rows[0].buffer.data
+                ).toString("base64");
                 setBase64String(string);
             })
-            .catch((e) => console.log(e.response.data.error));
+            .catch((err) => {
+                if (err.response.data.error === 'File too large') {
+                    setUploadErrorMessage(`${err.response.data.error} (max 1 MB)`);
+                } else {
+                    setUploadErrorMessage(err.response.data.error);
+                }
+                setError(true);
+                e.target.files[0] = {};
+            });
     };
 
     useEffect(() => {
         const getUser = async () => {
-            await axios
-                .get("/users/me")
-                .then((res) => {
-                    setUser({ name: res.data.name, id: res.data.user_uid });
-                })
+            await axios.get("/users/me").then((res) => {
+                setUser({ name: res.data.name, id: res.data.user_uid });
+            });
         };
 
         const getAvatar = async () => {
-            await axios
-                .get("/users/me/avatar")
-                .then((res) => {
-                    const string = Buffer.from(res.data.buffer.data).toString(
-                        "base64"
-                    );
-                    setBase64String(string);
-                })
+            await axios.get("/users/me/avatar").then((res) => {
+                const string = Buffer.from(res.data.buffer.data).toString(
+                    "base64"
+                );
+                setBase64String(string);
+            });
         };
 
         getUser();
@@ -233,7 +246,7 @@ const Sidebar = () => {
                 aria-labelledby="transition-modal-title"
                 aria-describedby="transition-modal-description"
                 open={modalOpen}
-                onClose={() => setModalOpen(false)}
+                onClose={handleClose}
                 closeAfterTransition
                 BackdropComponent={Backdrop}
                 BackdropProps={{
@@ -243,7 +256,57 @@ const Sidebar = () => {
             >
                 <Fade in={modalOpen}>
                     <Container maxWidth="xs" sx={style}>
-                        <input type="file" name="avatar" onChange={uploadAvatar}/>
+                        <Box
+                            sx={{
+                                py: 2,
+                                px: 1,
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "space-evenly",
+                            }}
+                        >
+                            <Typography
+                                variant="h5"
+                                fontWeight="500"
+                                sx={{ mb: 4 }}
+                            >
+                                Upload your avatar
+                            </Typography>
+                            <Button
+                                variant="contained"
+                                component="label"
+                                sx={{ width: "70%", mt: 2 }}
+                            >
+                                Choose file
+                                <input
+                                    hidden
+                                    type="file"
+                                    name="avatar"
+                                    onChange={uploadAvatar}
+                                />
+                            </Button>
+                            <Collapse in={error}>
+                                <Alert
+                                sx={{mt: 4}}
+                                    severity="error"
+                                    action={
+                                        <IconButton
+                                            aria-label="close"
+                                            color="inherit"
+                                            size="small"
+                                            onClick={() => {
+                                                setError(false);
+                                            }}
+                                        >
+                                            <CloseIcon fontSize="inherit" />
+                                        </IconButton>
+                                    }
+                                >
+                                    {uploadErrorMessage}
+                                </Alert>
+                            </Collapse>
+                        </Box>
                     </Container>
                 </Fade>
             </Modal>
