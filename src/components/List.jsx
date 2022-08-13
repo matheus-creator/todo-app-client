@@ -9,8 +9,8 @@ import {
     Tooltip,
     Typography,
 } from "@mui/material";
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import AddIcon from "@mui/icons-material/Add";
 import React, { useState, useEffect } from "react";
 import TaskModal from "./TaskModal";
@@ -26,7 +26,7 @@ const List = () => {
         title: "",
         description: "",
         completed: false,
-        task_uid: ""
+        task_uid: "",
     });
 
     useEffect(() => {
@@ -63,6 +63,7 @@ const List = () => {
                 <AccordionSummary
                     aria-controls="panel1a-content"
                     id="panel1a-header"
+                    sx={{ backgroundColor: "#dddddd" }}
                 >
                     <Box
                         sx={{
@@ -105,7 +106,7 @@ const List = () => {
                         </Box>
                     </Box>
                 </AccordionSummary>
-                <AccordionDetails>
+                <AccordionDetails sx={{ backgroundColor: "#f0f0f0", p: 2 }}>
                     <Typography>{description}</Typography>
                 </AccordionDetails>
             </Accordion>
@@ -137,11 +138,9 @@ const List = () => {
         tasksCopy[index].completed = status;
         setTasks(tasksCopy);
 
-        await axios
-            .patch(`/tasks/${id}`, data)
-            .catch((e) => {
-                window.location.href = "/login";
-            });
+        await axios.patch(`/tasks/${id}`, data).catch((e) => {
+            window.location.href = "/login";
+        });
     };
 
     const renderTasks = () => {
@@ -208,7 +207,7 @@ const List = () => {
                             title: modalTask.title,
                             description: modalTask.description,
                             completed: modalTask.completed,
-                            task_uid: modalTask.task_uid
+                            task_uid: modalTask.task_uid,
                         }}
                         tasks={tasks}
                         setTasks={setTasks}
