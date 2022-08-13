@@ -6,7 +6,7 @@ import Navbar from "../components/Navbar";
 
 const MainPage = () => {
     return (
-        <Box sx={{height: "100vh", backgroundColor: "#bbbdbd"}}>
+        <Box sx={{minHeight: "100vh", backgroundColor: "#bbbdbd"}}>
             <Navbar />
             <Stack direction="row">
                 <Sidebar />

@@ -176,7 +176,7 @@ const List = () => {
                         maxWidth: 500,
                     }}
                 >
-                    <Typography variant="h3" fontWeight="700">
+                    <Typography variant="h3" fontWeight="700" color="primary">
                         Todo list
                     </Typography>
 
@@ -223,8 +223,8 @@ const List = () => {
                         aria-label="add"
                         sx={{
                             display: { sm: "flex", md: "none" },
-                            position: "absolute",
-                            top: "90%",
+                            position: "fixed",
+                            top: "85%",
                             left: "50%",
                             transform: "translate(-50%, -50%)",
                         }}
