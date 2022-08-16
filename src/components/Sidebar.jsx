@@ -33,7 +33,6 @@ import { useState, useEffect } from "react";
 import axios from "../api/axios";
 import { Buffer } from "buffer";
 import AddFriend from "./AddFriend";
-import { useNavigate } from "react-router-dom";
 
 const style = {
     position: "absolute",
@@ -48,8 +47,6 @@ const style = {
 // TODO: implement avatar deletion, friend invitation, fix token expiration time
 
 const Sidebar = ({ setPage }) => {
-    const navigate = useNavigate();
-    const [user, setUser] = useState({});
     const [contributor, setContributor] = useState(null);
     const [error, setError] = useState(false);
     const [uploadErrorMessage, setUploadErrorMessage] = useState("");
@@ -116,12 +113,6 @@ const Sidebar = ({ setPage }) => {
     };
 
     useEffect(() => {
-        const getUser = async () => {
-            await axios.get("/users/me").then((res) => {
-                setUser({ name: res.data.name, user_uid: res.data.user_uid });
-            });
-        };
-
         const getContributor = async () => {
             await axios
                 .get("/users/me/contributor")
@@ -142,7 +133,6 @@ const Sidebar = ({ setPage }) => {
             });
         };
 
-        getUser();
         getContributor();
         getAvatar();
     }, []);

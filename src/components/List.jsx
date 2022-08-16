@@ -20,7 +20,9 @@ import axios from "../api/axios";
 
 const List = ({ page }) => {
     const url = page === "homepage" ? "tasks" : "contributorTasks";
+    const hasContributor = page === "homepage" ? false : true;
 
+    const [expression, setExpression] = useState("To-do");
     const [tasks, setTasks] = useState([]);
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [updateModalOpen, setUpdateModalOpen] = useState(false);
@@ -32,6 +34,17 @@ const List = ({ page }) => {
     });
 
     useEffect(() => {
+        const getContributor = async () => {
+            await axios
+                .get("/users/me/contributor")
+                .then((res) => {
+                    setExpression(res.data.name);
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
+        };
+
         const fetchTasks = async () => {
             await axios
                 .get(url)
@@ -42,8 +55,15 @@ const List = ({ page }) => {
                     window.location.href = "/login";
                 });
         };
+
+        if (hasContributor) {
+            getContributor();  
+        } else {
+            setExpression("To-do");
+        }
+
         fetchTasks();
-    }, [url]);
+    }, [url, hasContributor]);
 
     const CustomAccordion = ({
         task_uid,
@@ -179,7 +199,7 @@ const List = ({ page }) => {
                     }}
                 >
                     <Typography variant="h3" fontWeight="700" color="primary">
-                        To-do list
+                        {expression} list
                     </Typography>
 
                     <Fab
