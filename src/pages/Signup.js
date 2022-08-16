@@ -24,7 +24,7 @@ function Copyright(props) {
         >
             {"Copyright © "}
             <Link color="inherit" href="https://mui.com/">
-                TodoList
+                To-do App
             </Link>{" "}
             {new Date().getFullYear()}
             {"."}
@@ -57,7 +57,7 @@ const Signup = () => {
             const expirationTime = checked ? 'never' : '24h';
 
             await axios
-                .post("/users", { name, email, password, expirationTime })
+                .post("/users", { name, email, password, expirationTime, contributor: "" })
                 .then((res) => {
                     navigate("/");
                 })

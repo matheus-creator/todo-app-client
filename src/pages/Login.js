@@ -24,7 +24,7 @@ function Copyright(props) {
         >
             {"Copyright © "}
             <Link color="inherit" href="https://mui.com/">
-                TodoList
+                To-do App
             </Link>{" "}
             {new Date().getFullYear()}
             {"."}
