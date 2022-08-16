@@ -6,12 +6,13 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Box } from "@mui/system";
 import axios from "../api/axios";
 
 const AddFriend = ({ disabled }) => {
     const [open, setOpen] = useState(false);
     const [email, setEmail] = useState("");
+    const [error, setError] = useState(false);
+    const [errorText, setErrorText] = useState("");
 
     const handleAdd = async () => {
         await axios
@@ -20,27 +21,23 @@ const AddFriend = ({ disabled }) => {
             })
             .then((res) => {
                 window.location.href = "/";
+                setOpen(false);
             })
             .catch((e) => {
-                window.location.href = "/login";
+                console.log(e);
+                setError(true);
+                setErrorText(e.response.data.error);
             });
-        setOpen(false);
+        
     };
 
     return (
-        <Box
-            sx={{
-                position: "absolute",
-                bottom: "10%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-            }}
-        >
+        <>
             <Button
                 variant="contained"
                 color="alternative"
                 onClick={() => setOpen(true)}
-                sx={{display: disabled ? "none" : "block"}}
+                sx={{ display: disabled ? "none" : "block" }}
             >
                 Add a friend
             </Button>
@@ -63,7 +60,13 @@ const AddFriend = ({ disabled }) => {
                         type="email"
                         fullWidth
                         variant="standard"
-                        onChange={(e) => setEmail(e.target.value)}
+                        error={error}
+                        helperText={errorText}
+                        onChange={(e) => {
+                            setEmail(e.target.value);
+                            setError(false);
+                            setErrorText("");
+                        }}
                     />
                 </DialogContent>
                 <DialogActions>
@@ -71,7 +74,7 @@ const AddFriend = ({ disabled }) => {
                     <Button onClick={handleAdd}>Add</Button>
                 </DialogActions>
             </Dialog>
-        </Box>
+        </>
     );
 };
 

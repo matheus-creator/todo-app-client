@@ -28,6 +28,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import CloseIcon from "@mui/icons-material/Close";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import Logout from "@mui/icons-material/Logout";
 import { useState, useEffect } from "react";
 import axios from "../api/axios";
@@ -44,7 +45,7 @@ const style = {
     p: 4,
 };
 
-// TODO: implement avatar deletion, friend invitation, fix token expiration time
+// TODO: add friend only if he doesnt have another contributor
 
 const Sidebar = ({ setPage }) => {
     const [contributor, setContributor] = useState(null);
@@ -77,6 +78,18 @@ const Sidebar = ({ setPage }) => {
             .delete("/users/me/contributor")
             .then((res) => {
                 setContributor(null);
+                setPage("homepage");
+            })
+            .catch((e) => {
+                window.location.href = "/login";
+            });
+    };
+
+    const deleteAvatar = async () => {
+        await axios
+            .delete("/users/me/avatar")
+            .then((res) => {
+                setBase64String("");
             })
             .catch((e) => {
                 window.location.href = "/login";
@@ -223,6 +236,15 @@ const Sidebar = ({ setPage }) => {
                         Upload profile picture
                     </MenuItem>
                     <MenuItem
+                        onClick={deleteAvatar}
+                        disabled={base64String === "" ? true : false}
+                    >
+                        <ListItemIcon>
+                            <RemoveCircleIcon fontSize="small" />
+                        </ListItemIcon>
+                        Remove profile picture
+                    </MenuItem>
+                    <MenuItem
                         onClick={removeContributor}
                         disabled={contributor ? false : true}
                     >
@@ -278,7 +300,16 @@ const Sidebar = ({ setPage }) => {
                         </ListItem>
                     </List>
                 </Box>
-                <AddFriend disabled={contributor ? true : false} />
+                <Box
+                    sx={{
+                        position: "absolute",
+                        bottom: "10%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                    }}
+                >
+                    <AddFriend disabled={contributor ? true : false} />
+                </Box>
             </Box>
             <Modal
                 aria-labelledby="transition-modal-title"

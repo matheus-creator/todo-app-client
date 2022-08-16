@@ -9,7 +9,7 @@ const MainPage = () => {
     
     return (
         <Box sx={{minHeight: "100vh", backgroundColor: "#bbbdbd"}}>
-            <Navbar />
+            <Navbar page={page} setPage={setPage}/>
             <Stack direction="row">
                 <Sidebar setPage={setPage} />
                 <List page={page} />
