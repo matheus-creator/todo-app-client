@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { useEffect } from "react";
 
-const TaskModal = ({ data, isOpen, setOpen, tasks, setTasks, type }) => {
+const TaskModal = ({ url, data, isOpen, setOpen, tasks, setTasks, type }) => { 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [status, setStatus] = useState(false);
@@ -34,7 +34,7 @@ const TaskModal = ({ data, isOpen, setOpen, tasks, setTasks, type }) => {
 
         if (type === "create") {
             await axios
-                .post("/tasks", task)
+                .post(url, task)
                 .then((res) => {
                     setTasks([
                         ...tasks,

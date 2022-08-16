@@ -18,7 +18,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import axios from "../api/axios";
 
-const List = () => {
+const List = ({ page }) => {
+    const url = page === "homepage" ? "tasks" : "contributorTasks";
+
     const [tasks, setTasks] = useState([]);
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [updateModalOpen, setUpdateModalOpen] = useState(false);
@@ -32,7 +34,7 @@ const List = () => {
     useEffect(() => {
         const fetchTasks = async () => {
             await axios
-                .get("/tasks")
+                .get(url)
                 .then((res) => {
                     setTasks(res.data);
                 })
@@ -41,7 +43,7 @@ const List = () => {
                 });
         };
         fetchTasks();
-    }, []);
+    }, [url]);
 
     const CustomAccordion = ({
         task_uid,
@@ -84,7 +86,7 @@ const List = () => {
                                 icon={<RadioButtonUncheckedIcon />}
                                 checkedIcon={<CheckCircleIcon />}
                             />
-                            <Typography>{title}</Typography>
+                            <Typography fontWeight="700">{title}</Typography>
                         </Box>
                         <Box>
                             <Tooltip
@@ -115,7 +117,7 @@ const List = () => {
 
     const deleteTask = async (id) => {
         await axios
-            .delete(`/tasks/${id}`)
+            .delete(`/${url}/${id}`)
             .then((res) => {
                 const newTasks = tasks.filter((task) => task.task_uid !== id);
                 setTasks(newTasks);
@@ -177,7 +179,7 @@ const List = () => {
                     }}
                 >
                     <Typography variant="h3" fontWeight="700" color="primary">
-                        Todo list
+                        To-do list
                     </Typography>
 
                     <Fab
@@ -190,6 +192,7 @@ const List = () => {
                     </Fab>
 
                     <TaskModal
+                        url={url}
                         data={{
                             title: "",
                             description: "",
@@ -203,6 +206,7 @@ const List = () => {
                     />
 
                     <TaskModal
+                        url={url}
                         data={{
                             title: modalTask.title,
                             description: modalTask.description,

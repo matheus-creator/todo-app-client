@@ -27,11 +27,13 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import CloseIcon from "@mui/icons-material/Close";
-import PersonAdd from "@mui/icons-material/PersonAdd";
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import Logout from "@mui/icons-material/Logout";
 import { useState, useEffect } from "react";
 import axios from "../api/axios";
 import { Buffer } from "buffer";
+import AddFriend from "./AddFriend";
+import { useNavigate } from "react-router-dom";
 
 const style = {
     position: "absolute",
@@ -43,8 +45,12 @@ const style = {
     p: 4,
 };
 
-const Sidebar = () => {
+// TODO: implement avatar deletion, friend invitation, fix token expiration time
+
+const Sidebar = ({ setPage }) => {
+    const navigate = useNavigate();
     const [user, setUser] = useState({});
+    const [contributor, setContributor] = useState(null);
     const [error, setError] = useState(false);
     const [uploadErrorMessage, setUploadErrorMessage] = useState("");
     const [modalOpen, setModalOpen] = useState(false);
@@ -56,7 +62,7 @@ const Sidebar = () => {
         setModalOpen(false);
         setError(false);
         setUploadErrorMessage("");
-    }
+    };
 
     const logoutUser = async () => {
         await axios.post("/users/logout");
@@ -67,6 +73,17 @@ const Sidebar = () => {
         await axios.delete("/users/me").then((res) => {
             window.location.href = "/login";
         });
+    };
+
+    const removeContributor = async () => {
+        await axios
+            .delete("/users/me/contributor")
+            .then((res) => {
+                setContributor(null);
+            })
+            .catch((e) => {
+                window.location.href = "/login";
+            });
     };
 
     const uploadAvatar = async (e) => {
@@ -86,8 +103,10 @@ const Sidebar = () => {
                 setBase64String(string);
             })
             .catch((err) => {
-                if (err.response.data.error === 'File too large') {
-                    setUploadErrorMessage(`${err.response.data.error} (max 1 MB)`);
+                if (err.response.data.error === "File too large") {
+                    setUploadErrorMessage(
+                        `${err.response.data.error} (max 1 MB)`
+                    );
                 } else {
                     setUploadErrorMessage(err.response.data.error);
                 }
@@ -99,8 +118,19 @@ const Sidebar = () => {
     useEffect(() => {
         const getUser = async () => {
             await axios.get("/users/me").then((res) => {
-                setUser({ name: res.data.name, id: res.data.user_uid });
+                setUser({ name: res.data.name, user_uid: res.data.user_uid });
             });
+        };
+
+        const getContributor = async () => {
+            await axios
+                .get("/users/me/contributor")
+                .then((res) => {
+                    setContributor(res.data);
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
         };
 
         const getAvatar = async () => {
@@ -113,6 +143,7 @@ const Sidebar = () => {
         };
 
         getUser();
+        getContributor();
         getAvatar();
     }, []);
 
@@ -201,11 +232,14 @@ const Sidebar = () => {
                         </ListItemIcon>
                         Upload profile picture
                     </MenuItem>
-                    <MenuItem>
+                    <MenuItem
+                        onClick={removeContributor}
+                        disabled={contributor ? false : true}
+                    >
                         <ListItemIcon>
-                            <PersonAdd fontSize="small" />
+                            <PersonRemoveIcon fontSize="small" />
                         </ListItemIcon>
-                        Add contributor
+                        Remove contributor
                     </MenuItem>
                     <Divider />
                     <MenuItem onClick={logoutUser}>
@@ -224,7 +258,10 @@ const Sidebar = () => {
                 <Box sx={{ mx: 5 }}>
                     <List>
                         <ListItem disablePadding>
-                            <ListItemButton component="a" href="#">
+                            <ListItemButton
+                                component="a"
+                                onClick={() => setPage("homepage")}
+                            >
                                 <ListItemIcon>
                                     <HomeIcon color="secondary" />
                                 </ListItemIcon>
@@ -232,15 +269,26 @@ const Sidebar = () => {
                             </ListItemButton>
                         </ListItem>
                         <ListItem disablePadding>
-                            <ListItemButton component="a" href="#">
+                            <ListItemButton
+                                component="a"
+                                disabled={contributor ? false : true}
+                                onClick={() => setPage("friendpage")}
+                            >
                                 <ListItemIcon>
                                     <ArticleIcon color="secondary" />
                                 </ListItemIcon>
-                                <ListItemText primary="Friend page" />
+                                <ListItemText
+                                    primary={
+                                        contributor
+                                            ? `${contributor.name} page`
+                                            : "Friend page"
+                                    }
+                                />
                             </ListItemButton>
                         </ListItem>
                     </List>
                 </Box>
+                <AddFriend disabled={contributor ? true : false} />
             </Box>
             <Modal
                 aria-labelledby="transition-modal-title"
@@ -288,7 +336,7 @@ const Sidebar = () => {
                             </Button>
                             <Collapse in={error}>
                                 <Alert
-                                sx={{mt: 4}}
+                                    sx={{ mt: 4 }}
                                     severity="error"
                                     action={
                                         <IconButton
