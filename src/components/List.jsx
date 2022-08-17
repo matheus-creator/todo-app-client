@@ -38,7 +38,7 @@ const List = ({ page }) => {
             await axios
                 .get("/users/me/contributor")
                 .then((res) => {
-                    setExpression(res.data.name);
+                    setExpression(res.data.name + "'s");
                 })
                 .catch((e) => {
                     console.log(e);
@@ -57,7 +57,7 @@ const List = ({ page }) => {
         };
 
         if (hasContributor) {
-            getContributor();  
+            getContributor();
         } else {
             setExpression("To-do");
         }

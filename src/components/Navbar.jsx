@@ -88,7 +88,6 @@ const Navbar = ({ page, setPage }) => {
             .catch((e) => {
                 window.location.href = "/login";
             });
-        
     };
 
     const deleteAvatar = async () => {
@@ -165,8 +164,13 @@ const Navbar = ({ page, setPage }) => {
             }}
         >
             <StyledToolbar>
-                <Typography variant="h6" hidden={contributor ? false : true}>TO-DO LIST</Typography>
-                <AddFriend sx={{mx: "auto"}} disabled={contributor ? true : false} />
+                <Typography variant="h6" hidden={contributor ? false : true}>
+                    TO-DO LIST
+                </Typography>
+                <AddFriend
+                    sx={{ mx: "auto" }}
+                    disabled={contributor ? true : false}
+                />
                 <Tooltip title="Account settings">
                     <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
                         <Avatar sx={{ width: 40, height: 40 }}>
@@ -339,7 +343,7 @@ const Navbar = ({ page, setPage }) => {
                     showLabels
                     value={page === "homepage" ? 0 : 1}
                     onChange={(event, newValue) => {
-                        setPage(newValue ? "friendpage": "homepage");
+                        setPage(newValue ? "friendpage" : "homepage");
                     }}
                 >
                     <BottomNavigationAction
@@ -348,7 +352,11 @@ const Navbar = ({ page, setPage }) => {
                     />
                     <BottomNavigationAction
                         disabled={contributor ? false : true}
-                        label="Friend page"
+                        label={
+                            contributor
+                                ? `${contributor.name}'s page`
+                                : "Friend page"
+                        }
                         icon={<ArticleIcon />}
                     />
                 </BottomNavigation>

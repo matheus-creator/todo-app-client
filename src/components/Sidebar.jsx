@@ -45,8 +45,6 @@ const style = {
     p: 4,
 };
 
-// TODO: add friend only if he doesnt have another contributor
-
 const Sidebar = ({ setPage }) => {
     const [contributor, setContributor] = useState(null);
     const [error, setError] = useState(false);
@@ -292,7 +290,7 @@ const Sidebar = ({ setPage }) => {
                                 <ListItemText
                                     primary={
                                         contributor
-                                            ? `${contributor.name} page`
+                                            ? `${contributor.name}'s page`
                                             : "Friend page"
                                     }
                                 />
