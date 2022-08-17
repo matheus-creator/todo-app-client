@@ -14,7 +14,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import axios from "../api/axios";
 
-function Copyright(props) {
+const Copyright = (props) =>  {
     return (
         <Typography
             variant="body2"
@@ -56,15 +56,13 @@ const Signup = () => {
         } else {
             const expirationTime = checked ? 'never' : '24h';
 
-            await axios
-                .post("/users", { name, email, password, expirationTime, contributor: "" })
-                .then((res) => {
-                    navigate("/");
-                })
-                .catch((e) => {
-                    setEmailError(true);
-                    setEmailErrorText("Email already in use");
-                });
+            try {
+                await axios.post("/users", { name, email, password, expirationTime, contributor: "" });
+                navigate("/");
+            } catch {
+                setEmailError(true);
+                setEmailErrorText("Email already in use");
+            }
         }
     };
 

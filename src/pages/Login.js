@@ -14,7 +14,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import axios from "../api/axios";
 
-function Copyright(props) {
+const Copyright = (props) => {
     return (
         <Typography
             variant="body2"
@@ -44,15 +44,13 @@ const Login = () => {
         e.preventDefault();
         const expirationTime = checked ? 'never' : '24h';
 
-        await axios
-            .post("/users/login", { email, password, expirationTime })
-            .then((res) => {
-                navigate("/");
-            })
-            .catch((e) => {
-                setError(true);
-                setErrorText("Credentials invalid");
-            });
+        try {
+            await axios.post("/users/login", { email, password, expirationTime });
+            navigate("/");
+        } catch {            
+            setError(true);
+            setErrorText("Credentials invalid");
+        }
     };
 
     return (

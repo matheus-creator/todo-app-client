@@ -35,25 +35,23 @@ const List = ({ page }) => {
 
     useEffect(() => {
         const getContributor = async () => {
-            await axios
-                .get("/users/me/contributor")
-                .then((res) => {
-                    setExpression(res.data.name + "'s");
-                })
-                .catch((e) => {
-                    console.log(e);
-                });
+            try {
+                const res = await axios.get("/users/me/contributor");
+                setExpression(res.data.name + "'s");
+            } catch (e) {
+                if (e.response.status === 401) {
+                    window.location.href = "/login";
+                }
+            }
         };
 
         const fetchTasks = async () => {
-            await axios
-                .get(url)
-                .then((res) => {
-                    setTasks(res.data);
-                })
-                .catch((e) => {
-                    window.location.href = "/login";
-                });
+            try {
+                const res = await axios.get(url);
+                setTasks(res.data);
+            } catch {
+                window.location.href = "/login";
+            }
         };
 
         if (hasContributor) {
@@ -65,22 +63,14 @@ const List = ({ page }) => {
         fetchTasks();
     }, [url, hasContributor]);
 
-    const CustomAccordion = ({
-        task_uid,
-        title,
-        description,
-        status,
-        updateStatus,
-    }) => {
+    const CustomAccordion = ({ task_uid, title, description, status, updateStatus }) => {
         const [expanded, setExpanded] = useState(false);
         const [completed, setCompleted] = useState(status);
 
         return (
             <Accordion
                 expanded={expanded}
-                onChange={() => {
-                    setExpanded(!expanded);
-                }}
+                onChange={() => setExpanded(!expanded)}
             >
                 <AccordionSummary
                     aria-controls="panel1a-content"
@@ -136,15 +126,13 @@ const List = ({ page }) => {
     };
 
     const deleteTask = async (id) => {
-        await axios
-            .delete(`/${url}/${id}`)
-            .then((res) => {
-                const newTasks = tasks.filter((task) => task.task_uid !== id);
-                setTasks(newTasks);
-            })
-            .catch((e) => {
-                window.location.href = "/login";
-            });
+        try {
+            await axios.delete(`/${url}/${id}`);
+            const newTasks = tasks.filter((task) => task.task_uid !== id);
+            setTasks(newTasks);
+        } catch {
+            window.location.href = "/login";
+        }
     };
 
     const handleTaskEdit = (id) => {
@@ -160,9 +148,11 @@ const List = ({ page }) => {
         tasksCopy[index].completed = status;
         setTasks(tasksCopy);
 
-        await axios.patch(`/tasks/${id}`, data).catch((e) => {
+        try {
+            await axios.patch(`/tasks/${id}`, data);
+        } catch {
             window.location.href = "/login";
-        });
+        }
     };
 
     const renderTasks = () => {

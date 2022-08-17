@@ -15,20 +15,17 @@ const AddFriend = ({ disabled }) => {
     const [errorText, setErrorText] = useState("");
 
     const handleAdd = async () => {
-        await axios
-            .patch("/users/me/contributor", {
-                contributor_email: email,
-            })
-            .then((res) => {
-                window.location.href = "/";
-                setOpen(false);
-            })
-            .catch((e) => {
-                console.log(e);
-                setError(true);
-                setErrorText(e.response.data.error);
-            });
-        
+        try {
+            await axios.patch("/users/me/contributor", { contributor_email: email });
+            window.location.href = "/";
+            setOpen(false);
+        } catch (e) {
+            if (e.response.status === 401) {
+                window.location = "/login";
+            }
+            setError(true);
+            setErrorText(e.response.data.error);
+        }        
     };
 
     return (

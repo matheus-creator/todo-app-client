@@ -3,20 +3,18 @@ import React, { useState, useEffect } from "react";
 import axios from "../api/axios";
 import { Backdrop, CircularProgress } from "@mui/material";
 
-export const PrivateRoutes = () => {
+const PrivateRoutes = () => {
     const [isAuthenticated, setAuthenticated] = useState(false);
     const [isLoading, setLoading] = useState(true);
 
     useEffect(() => {
         const initializeAuth = async () => {
-            await axios
-                .get("/users/me")
-                .then((res) => {
-                    setAuthenticated(true);
-                })
-                .catch((e) => {
-                    setAuthenticated(false);
-                });
+            try {
+                await axios.get("/users/me");
+                setAuthenticated(true);
+            } catch {
+                setAuthenticated(false);
+            }
             setLoading(false);
         };
         initializeAuth();
